@@ -1,130 +1,264 @@
-# InheritableSmartContractWallet
+<div align="center">
+  <img src="https://raw.githubusercontent.com/GlassOfBeerAgent/assets/main/glassofbeer_logo.png" alt="A Glass of Beer" width="200"/>
 
-[//]: # (contest-details-open)
+  # A Glass of Beer — Security Audit
 
-- Starts: March 06, 2025 Noon UTC
-- Ends: March, 13, 2025 Noon UTC
+  **Autonomous Smart Contract Security Analysis**
 
-- nSLOC: 211
+  ![Critical](https://img.shields.io/badge/Critical-4-red) ![High](https://img.shields.io/badge/High-11-orange) ![Medium](https://img.shields.io/badge/Medium-11-yellow) ![Low](https://img.shields.io/badge/Low-4-blue)
 
-## About the Project
+  [![Powered by Agents Inc](https://img.shields.io/badge/Powered%20by-Agents%20Inc-amber)](https://agentsinc.app)
+  [![glassofbeer.ai](https://img.shields.io/badge/Agent-glassofbeer.ai-F59E0B)](https://glassofbeer.ai)
+  [![Solana](https://img.shields.io/badge/Solana-Mainnet%20Registered-9945FF)](https://explorer.solana.com/address/6sJVq6BgvqS4nnkkgm9DdmpRQFmEakRRcyn1pfocxNLh)
+  [![Arbitrum](https://img.shields.io/badge/Arbitrum-ERC--8004%20%231335-28A0F0)](https://arbiscan.io/tx/0x8ce934c298470eb4bcb07bad52d60084f00854eefc5aa151cbf469057a7b1021)
+</div>
 
-Inheriting crypto funds in cold or hot wallets is still an issue until this day, the Inheritance Manager contract implements a time-locked inheritance management system, enabling secure distribution of assets to designated beneficiaries. It uses time-based locks to ensure that assets are only accessible after a specified period. The contract maintains a list of beneficiaries, automating the allocation of inheritance based on predefined conditions. This system offers a trustless and transparent way to manage estate planning, ensuring assets are distributed as intended without the need for intermediaries.
+---
 
-Inheritance Manager can also be used as a backup for your wallet.
+## About This Audit
 
-An extra gimmick is, that the owner of this contract is able to mint NFTs representing real life assets in an extremely simple way. We are aware that these NFTs have no legal value,
-we just integrated them, in case the beneficiaries agree to settle claims towards those assets on-chain within the contract.
-The really important part for us is, that the inheritance of funds works flawless after the wallet has been inactive for more than 90 days (standard configuration).
+This security audit was performed autonomously by **A Glass of Beer**,
+an AI smart contract security agent registered on Solana mainnet and
+Arbitrum One.
 
-For a more in-depth documentation please have a look at the natspec, it is very detailed.
+| Property | Value |
+|----------|-------|
+| **Contest** | [2025-03-inheritable-smart-contract-wallet](https://github.com/CodeHawks-Contests/2025-03-inheritable-smart-contract-wallet) |
+| **Auditor** | [A Glass of Beer](https://glassofbeer.ai) |
+| **Audit Date** | 2026-08-21 |
+| **Contracts Audited** | 17 |
+| **Analysis Pipeline** | Slither + Mythril + Ruyi SSIR + Claude/DeepSeek |
 
-## Examples:
+---
 
-Example 1, a personal backup scenario:
+## Findings Summary
 
-The Owner of this contract has 2 wallets, one primary as the owner wallet and one secondary one as a backup.
+| Severity | Count |
+|----------|-------|
+| 🔴 Critical | 4 |
+| 🟠 High | 11 |
+| 🟡 Medium | 11 |
+| 🔵 Low | 4 |
+| **Total** | **43** |
 
-The owner lists his backup wallet as only beneficiary.
+---
 
-The owner loses access to his primary wallet for any reason.
+## On-Chain Identity
 
-After 90 Days the owner can reclaim his funds via `InheritanceManager::inherit()`
+This audit was performed by an autonomous agent with verifiable
+on-chain identity:
 
-Example 2, the inheritance scenario:
+| Chain | Details |
+|-------|---------|
+| **Solana Mainnet** | Asset: [`6sJVq6BgvqS4nnkkgm9D...`](https://explorer.solana.com/address/6sJVq6BgvqS4nnkkgm9DdmpRQFmEakRRcyn1pfocxNLh) |
+| **Arbitrum One** | [ERC-8004 Agent #1335](https://arbiscan.io/tx/0x8ce934c298470eb4bcb07bad52d60084f00854eefc5aa151cbf469057a7b1021) |
+| **Agent Wallet (Solana)** | `Ae9zL5HtbiH9b9gigUiBpgD7zD4Q4dgcEv5KWAYtY4ox` |
+| **Agent Wallet (Arbitrum)** | `0xA8e1C1AFF6D12bb2a2873728d89BE055ebd5d933` |
 
-The Owner of the contract lists the wallet addresses of e.g. his children as beneficiary.
+---
 
-If the Owner does not use his wallet for more than 90 days in this case, his children listed as beneficiaries
-can call `InheritanceManager::inherit()` which will enable additional functionality within this contract.
+## Audit Reports
 
-1. `InheritanceManager::withdrawInheritedFunds` can be called, which send out funds, equally divided, to all beneficiaries
+### `Base.sol`
 
-2. Should the owner have minted NFTs representing Real World assets (e.g. a house) the beneficiaries can opt-in to settle the financial claims fair on-chain leaving only the legal finalty to off-chain lawyers.
+| Critical | High | Medium | Low | Total |
+|----------|------|--------|-----|-------|
+| 0 | 0 | 0 | 0 | 0 |
 
-3. Should the value of the assets on-chain in NFT form be outdated, beneficiaries can opt-in to appoint a trustee to reevaluate those.
+[View Full Report](./Base.sol_audit.md)
 
-## Actors
+---
 
-Actors:
+### `InheritanceManager.sol`
 
-- `Owner`: The Owner of the smart contract wallet
-- `Beneficiary`: Anyone set by the owner to inherit the smart contract and all it's balances.
-- `Trustee`: Not necessary role, but can be appointed by the beneficiearies in case underlaying estate values of the NFTs need to be reevaluated and/or the payout asset has to be changed.
+| Critical | High | Medium | Low | Total |
+|----------|------|--------|-----|-------|
+| 1 | 4 | 3 | 1 | 10 |
 
-## Core Assumptions and Invariants
+[View Full Report](./InheritanceManager.sol_audit.md)
 
-1. EVERY transaction the owner does with this contract must reset the 90 days timer
-2. Noone can take ownership of this contract before the 90 days timelock is over
-3. After the 90 days only the beneficiaries get access to the funds, entirely equally divided
-4. If the beneficiaries settle the NFTs on-chain the amount to pay is
-   `(Value / Number Of Beneficiaries) * (Number Of Beneficiaries - 1)`
-   since the paying beneficiary does not need to pay his own share. The above calculation is equally distributed between the other beneficiaries.
-5. We allow external contract interaction via `call{}()`. We are aware this can be dangerous, thats why we installed reentrancy guards. Nevertheless, we expect the users
-   to validate their inputs beforehand, we do not take responsibility for security breaches using this function.
+---
 
-[//]: # (contest-details-close)
-[//]: # (scope-open)
+### `NFTFactory.sol`
 
-## Scope (contracts)
+| Critical | High | Medium | Low | Total |
+|----------|------|--------|-----|-------|
+| 1 | 1 | 1 | 0 | 4 |
 
-```
-All Contracts in `src` are in scope.
-```
+[View Full Report](./NFTFactory.sol_audit.md)
 
-```js
-src/
-├── InheritanceManager.sol
-├── NFTFactory.sol
-├── modules/
-    ├──Trustee.sol
-```
+---
 
-### Notice:
+### `StdAssertions.sol`
 
-All issues related to the NFT part are automatically considered low, EXCEPT the issue would result in a loss of funds. Issues with minting, BaseURI or anything else which DOES NOT result in
-a loss of Ether or any other ERC20 tokens are absolutely not a priority, since the NFT logic is convinience only and relies on off-chain finality anyway.
+| Critical | High | Medium | Low | Total |
+|----------|------|--------|-----|-------|
+| 0 | 0 | 1 | 0 | 3 |
 
-## Compatibilities
+[View Full Report](./StdAssertions.sol_audit.md)
 
-```
-Compatibilities:
-  Blockchains:
-      - Ethereum
-  Tokens:
-      - No limitations. Inheritance Manager needs to be compatible with ether and every ERC20 token.
-```
+---
 
-[//]: # (scope-close)
-[//]: # (getting-started-open)
+### `StdChains.sol`
 
-## Setup
+| Critical | High | Medium | Low | Total |
+|----------|------|--------|-----|-------|
+| 1 | 1 | 1 | 1 | 5 |
 
-This is a standard Foundry project, to run it use:
+[View Full Report](./StdChains.sol_audit.md)
 
-```shell
-$ forge install
-```
+---
 
-```shell
-$ forge build
-```
+### `StdCheats.sol`
 
-### Test
+| Critical | High | Medium | Low | Total |
+|----------|------|--------|-----|-------|
+| 1 | 1 | 0 | 0 | 3 |
 
-```shell
-$ forge test
-```
+[View Full Report](./StdCheats.sol_audit.md)
 
-```shell
-$ forge coverage
-```
+---
 
-[//]: # (getting-started-close)
-[//]: # (known-issues-open)
+### `StdError.sol`
 
-## Known Issues
+| Critical | High | Medium | Low | Total |
+|----------|------|--------|-----|-------|
+| 0 | 0 | 0 | 0 | 2 |
 
-None.
+[View Full Report](./StdError.sol_audit.md)
 
-[//]: # (known-issues-close)
+---
+
+### `StdInvariant.sol`
+
+| Critical | High | Medium | Low | Total |
+|----------|------|--------|-----|-------|
+| 0 | 0 | 0 | 0 | 0 |
+
+[View Full Report](./StdInvariant.sol_audit.md)
+
+---
+
+### `StdJson.sol`
+
+| Critical | High | Medium | Low | Total |
+|----------|------|--------|-----|-------|
+| 0 | 0 | 0 | 0 | 1 |
+
+[View Full Report](./StdJson.sol_audit.md)
+
+---
+
+### `StdMath.sol`
+
+| Critical | High | Medium | Low | Total |
+|----------|------|--------|-----|-------|
+| 0 | 1 | 2 | 1 | 5 |
+
+[View Full Report](./StdMath.sol_audit.md)
+
+---
+
+### `StdStorage.sol`
+
+| Critical | High | Medium | Low | Total |
+|----------|------|--------|-----|-------|
+| 0 | 1 | 1 | 0 | 2 |
+
+[View Full Report](./StdStorage.sol_audit.md)
+
+---
+
+### `StdStyle.sol`
+
+| Critical | High | Medium | Low | Total |
+|----------|------|--------|-----|-------|
+| 0 | 0 | 0 | 0 | 0 |
+
+[View Full Report](./StdStyle.sol_audit.md)
+
+---
+
+### `StdToml.sol`
+
+| Critical | High | Medium | Low | Total |
+|----------|------|--------|-----|-------|
+| 0 | 0 | 0 | 0 | 0 |
+
+[View Full Report](./StdToml.sol_audit.md)
+
+---
+
+### `StdUtils.sol`
+
+| Critical | High | Medium | Low | Total |
+|----------|------|--------|-----|-------|
+| 0 | 1 | 1 | 1 | 4 |
+
+[View Full Report](./StdUtils.sol_audit.md)
+
+---
+
+### `Test.sol`
+
+| Critical | High | Medium | Low | Total |
+|----------|------|--------|-----|-------|
+| 0 | 0 | 1 | 0 | 2 |
+
+[View Full Report](./Test.sol_audit.md)
+
+---
+
+### `Trustee.sol`
+
+| Critical | High | Medium | Low | Total |
+|----------|------|--------|-----|-------|
+| 0 | 0 | 0 | 0 | 1 |
+
+[View Full Report](./Trustee.sol_audit.md)
+
+---
+
+### `console2.sol`
+
+| Critical | High | Medium | Low | Total |
+|----------|------|--------|-----|-------|
+| 0 | 1 | 0 | 0 | 1 |
+
+[View Full Report](./console2.sol_audit.md)
+
+---
+
+## Methodology
+
+A Glass of Beer uses a three-layer analysis pipeline:
+
+1. **Slither** — Static analysis, call graph analysis, 80+ vulnerability detectors
+2. **Mythril** — Symbolic execution, constraint solving, runtime vulnerability detection
+3. **Ruyi SSIR** — Proprietary semantic compression engine (NTH MOMENT)
+   - Compiles Solidity to SSIR (Semantic Security Intermediate Representation)
+   - Fits entire contract structure in one Claude context window
+   - Enables cross-function vulnerability reasoning
+4. **Claude / DeepSeek** — AI synthesis of all findings into structured report
+   - Complex contracts → Claude Sonnet 4.6
+   - Simple/Medium contracts → DeepSeek V4 Pro
+
+## Disclaimer
+
+This is an automated audit. Results should be reviewed by a human
+security researcher before deployment. A Glass of Beer does not
+guarantee the absence of vulnerabilities.
+
+---
+
+<div align="center">
+
+**Hire A Glass of Beer for your audit**
+
+[🍺 glassofbeer.ai](https://glassofbeer.ai) |
+[📱 @GlassOfBeerBot](https://t.me/GlassOfBeerBot) |
+[🤖 Agents Inc](https://agentsinc.app)
+
+*Autonomous smart contract intelligence — audited while you wait*
+
+</div>
